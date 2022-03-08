@@ -65,6 +65,9 @@
         - Não é possível tranferir NFTs que estão minerando/farmando
     - Retirar NFTs do stake (WITHDRAW);
     - Clamar recompensas tokem GMT (HARVEST).
+- Observaçãos:
+     - Para fins didático... como a recompensa é calculada por blocos minerados, troquei o "block.number" por uma variável declarada como "blockAtual".
+     - Para poder realizar os testes. Expus uma "function public" declarada como "setBlock" para poder setar o "blockAtual".
 
 ## References
 - OpenZeppelin: https://openzeppelin.com/
