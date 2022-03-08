@@ -1,0 +1,140 @@
+﻿@page "/nfts"
+
+@implements IAsyncDisposable
+@inject IJSRuntime js
+@using Models
+
+<PageTitle>NFTs</PageTitle>
+
+<div class="container px-4 py-5" id="custom-cards">
+
+    <div class="d-flex align-items-center p-3 my-3 text-white bg-dark rounded shadow-sm">
+        <img class="me-3" src="../assets/dist/img/nft-logo.png" alt="" width="70" height="auto">
+        <div class="lh-2 me-5">
+            <h3 class="h6 mb-0 text-white lh-1">GALLERY</h3>
+            <small>miners</small>
+        </div>
+        <div class="lh-2 me-3">
+            <button class="btn btn-warning me-md-2" type="button" @onclick="MintNFT">Mintar NFT</button>
+        </div>
+        <div class="lh-2 me-3">
+            <small>É necessário 20 tokens GMT para poder mintar 1 NFT.</small>
+        </div>
+    </div>
+
+    <div class="album py-5 bg-light">
+        <div class="container">
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+
+                @foreach (var item in NFTsList)
+                {
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <img src=@item.UrlImg />
+
+                            <div class="card-body">
+                                <ul class="d-flex list-unstyled mt-auto">
+                                    <li class="d-flex align-items-center me-3">
+                                        <svg class="bi me-2" width="1em" height="1em">
+                                            <use xlink:href="#people-circle" />
+                                        </svg>
+                                        <small>@item.Name</small>
+                                    </li>
+                                    <li class="d-flex align-items-center">
+                                        <svg class="bi me-2" width="1em" height="1em">
+                                            <use xlink:href="#gem" />
+                                        </svg>
+                                        <small>Class @item.Class</small>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalNFT" tabindex="-1" aria-labelledby="modalNFTLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalNFTLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-md-center">
+                    <div class="col col-sm-6">
+                        <img src=@NFTMintado.UrlImg class="card-img-top" alt="...">
+                        <ul class="list-group">
+                            <li class="list-group-item">Name: @NFTMintado.Name</li>
+                            <li class="list-group-item">Classe: @NFTMintado.Class</li>
+                            <li class="list-group-item">Level: @NFTMintado.Level</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private DotNetObjectReference<NFTs> dotNetObjectReference;
+    private IJSObjectReference connectDisplayJSObjectReference;
+
+    private List<MinerNFT> NFTsList;
+    private MinerNFT NFTMintado;
+
+    protected override void OnInitialized()
+    {
+        NFTsList = new List<MinerNFT>();
+        NFTMintado = new MinerNFT();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetObjectReference = DotNetObjectReference.Create(this);
+            connectDisplayJSObjectReference = await js.InvokeAsync<IJSObjectReference>("minerNFTs");
+            await connectDisplayJSObjectReference.InvokeVoidAsync("init", dotNetObjectReference);
+        }
+    }
+
+    private async Task MintNFT()
+    {
+        await connectDisplayJSObjectReference.InvokeVoidAsync("mintNFT");
+    }
+
+    [JSInvokable]
+    public void LoadNFT(List<MinerNFT> _nfts)
+    {
+        _nfts.ForEach(x =>
+        {
+            x.UrlImg = string.Format("assets/dist/img/miners_v2/class{0}.jpg", x.Class.ToUpper());
+        });
+        NFTsList = _nfts;
+        StateHasChanged(); ;
+    }
+
+    [JSInvokable]
+    public void SetNftMintado()
+    {
+        NFTMintado = NFTsList.LastOrDefault() ?? new MinerNFT();
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await connectDisplayJSObjectReference.DisposeAsync();
+        dotNetObjectReference.Dispose();
+    }
+
+}

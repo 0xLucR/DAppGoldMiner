@@ -1,0 +1,143 @@
+@page "/farm"
+
+@implements IAsyncDisposable
+@inject IJSRuntime js
+@using Models
+
+<PageTitle>NFT Farm</PageTitle>
+
+
+<div class="container px-4 py-5 myBackground" id="custom-cards">
+    <h2 class="pb-2 border-bottom text-white"><strong>NFT Farm</strong></h2>
+
+    <div class="row mb-2">
+        <div class="col-md-12 themed-grid-col bg-dark text-white">
+            <div class="row">
+                <div class="col-md-5 themed-grid-col bg-dark">Total Staked</div>
+                <div class="col-md-5 themed-grid-col bg-dark">Havert</div>
+                <div class="col-md-2 themed-grid-col bg-dark">Action</div>
+            </div>
+
+            <div class="row ">
+                <div class="col-md-5 themed-grid-col  bg-light text-dark">@GridStake.AmountStaked</div>
+                <div class="col-md-5 themed-grid-col bg-light text-dark">@GridStake.AmountReward
+                    <small><strong>GMT</strong></small>
+                </div>
+                <div class="col-md-2 themed-grid-col bg-dark text-dark">
+                    <button class="btn btn-success btn-sm" type="button" disabled=@GridStake.DisableHarvest
+                        @onclick="Harvest">Harvest</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="album py-5 myBackground bg-light">
+        <div class="container">
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                @foreach (var item in NFTsList)
+                {
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <img src=@item.UrlImg />
+
+                            <div class="card-body">
+                                <ul class="d-flex list-unstyled mt-auto">
+                                    <li class="d-flex align-items-center me-3">
+                                        <svg class="bi me-2" width="1em" height="1em">
+                                            <use xlink:href="#people-circle" />
+                                        </svg>
+                                        <small>@item.Name</small>
+                                    </li>
+                                    <li class="d-flex align-items-center">
+                                        <svg class="bi me-2" width="1em" height="1em">
+                                            <use xlink:href="#gem" />
+                                        </svg>
+                                        <small>Class @item.Class</small>
+                                    </li>
+                                </ul>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-success" disabled=@item.DisableDeposit
+                                        @onclick="()=>Deposit(item.Id)">Deposit</button>
+                                        <button type=" button" class="btn btn-sm btn-danger" disabled=@item.DisableWithdraw
+                                        @onclick="()=>Withdraw(item.Id)">Withdraw</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    private DotNetObjectReference<Farm> dotNetObjectReference;
+    private IJSObjectReference connectDisplayJSObjectReference;
+
+    private List<MinerNFT> NFTsList;
+    private MinerNFT NFTMintado;
+    private GridStakeHelp GridStake;
+
+    protected override void OnInitialized()
+    {
+        NFTsList = new List<MinerNFT>();
+        NFTMintado = new MinerNFT();
+        GridStake = new GridStakeHelp(0, "0");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetObjectReference = DotNetObjectReference.Create(this);
+            connectDisplayJSObjectReference = await js.InvokeAsync<IJSObjectReference>("farm");
+            await connectDisplayJSObjectReference.InvokeVoidAsync("init", dotNetObjectReference);
+        }
+    }
+
+    private async Task Harvest()
+    {
+        await connectDisplayJSObjectReference.InvokeVoidAsync("harvest");
+    }
+
+    private async Task Deposit(int _id)
+    {
+        await connectDisplayJSObjectReference.InvokeVoidAsync("deposit", _id);
+    }
+
+    private async Task Withdraw(int _id)
+    {
+        await connectDisplayJSObjectReference.InvokeVoidAsync("withdraw", _id);
+    }
+
+    [JSInvokable]
+    public void LoadNFTs(List<MinerNFT> _nfts)
+    {
+        _nfts.ForEach(x =>
+        {
+            x.UrlImg = string.Format("assets/dist/img/miners_v2/class{0}.jpg", x.Class.ToUpper());
+        });
+        NFTsList = _nfts;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void LoadGridStake(GridStakeHelp grid)
+    {
+        this.GridStake = grid;
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await connectDisplayJSObjectReference.DisposeAsync();
+        dotNetObjectReference.Dispose();
+    }
+
+}

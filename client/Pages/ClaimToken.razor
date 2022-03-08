@@ -1,0 +1,82 @@
+﻿@page "/claimToken"
+
+@implements IAsyncDisposable
+@inject IJSRuntime js
+
+<PageTitle>Claim Token</PageTitle>
+
+<div class="container px-4 py-5" id="hanging-icons">
+    <h2 class="pb-2 border-bottom"><strong>Gold miner token - GMT</strong></h2>
+    <div class="row g-4 py-5 row-cols-1 row-cols-lg-2">
+        <div class="col d-flex align-items-start">
+            <div class="icon-square bg-light text-dark flex-shrink-0 me-3">
+                <svg class="bi" width="1em" height="1em">
+                    <use xlink:href="#gift" />
+                </svg>
+            </div>
+            <div>
+                <h2>Claim tokens free</h2>
+                <p>Para clamar os tokens, seu balance deve está zerado.</p>
+                <a href="claimToken" class="btn btn-primary" @onclick="Claim">
+                    Claim
+                </a>
+            </div>
+        </div>
+        <div class="col d-flex align-items-start">
+            <div class="icon-square bg-light text-dark flex-shrink-0 me-3">
+                <svg class="bi" width="1em" height="1em">
+                    <use xlink:href="#eye" />
+                </svg>
+            </div>
+            <div>
+                <h3>Balance:</h3>
+                <div class="col-auto ">
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between lh-sm bg-dark text-white">
+                            <div>
+                                <h6 class="my-0" id="tokenBalance"><strong>@balance</strong></h6>
+                                <small class="text-muted"><strong>Gold miner token</strong></small>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private DotNetObjectReference<ClaimToken> dotNetObjectReference;
+    private IJSObjectReference connectDisplayJSObjectReference;
+    private string nameToken = "GMT";
+    private string balance = "0.0";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetObjectReference = DotNetObjectReference.Create(this);
+            connectDisplayJSObjectReference = await js.InvokeAsync<IJSObjectReference>("claimToken");
+            await connectDisplayJSObjectReference.InvokeVoidAsync("init", dotNetObjectReference);
+        }
+    }
+
+    private async void Claim()
+    {
+        await connectDisplayJSObjectReference.InvokeVoidAsync("claimTokenMethod");
+    }
+
+    [JSInvokable]
+    public void UpdateBalance(string balanceParam)
+    {
+        balance = balanceParam;
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await connectDisplayJSObjectReference.DisposeAsync();
+        dotNetObjectReference.Dispose();
+    }
+}

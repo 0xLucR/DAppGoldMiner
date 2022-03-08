@@ -1,0 +1,76 @@
+﻿@inject NavigationManager NavigationManager
+@inject IJSRuntime js
+@using minerGold.Models
+
+
+<div class="dropdown">
+    <a href="#" class="d-flex align-items-center text-white text-decoration-none" id="dropdownUser1"
+        data-bs-toggle="dropdown" aria-expanded="false">
+        <img src="../assets/dist/img/logo-metamask.png" alt="" width="32" height="32" class="rounded-circle me-2">
+        <strong>@connectHelp.AccountFormated</strong>
+    </a>
+</div>
+<hr>
+<div class="d-grid gap-2 d-md-block">
+    <button type="button" class="btn btn-warning btn-sm" disabled="@connectHelp.Connected"
+        @onclick="Connect">Connect</button>
+</div>
+
+@code {
+    private DotNetObjectReference<ConnectWallet> dotNetObjectReference;
+    private IJSObjectReference connectDisplayJSObjectReference;
+    private ConnectHelp connectHelp;
+
+    protected override void OnInitialized()
+    {
+        connectHelp = new ConnectHelp();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetObjectReference = DotNetObjectReference.Create(this);
+            connectDisplayJSObjectReference = await js.InvokeAsync<IJSObjectReference>("connectDisplay");
+            var interopResult = await connectDisplayJSObjectReference.InvokeAsync<string>("init", dotNetObjectReference);
+            setAccount(interopResult);
+
+        }
+    }
+
+    private async Task Connect()
+    {
+        var interopResult = await connectDisplayJSObjectReference.InvokeAsync<string>("connect");
+        if (interopResult != null && interopResult != "")
+        {
+            setAccount(interopResult);
+            NavigationManager.NavigateTo("/");
+        }
+
+    }
+
+    [JSInvokable]
+    public async Task ChangeAccount()
+    {
+        var accountConnected = await connectDisplayJSObjectReference.InvokeAsync<string>("getAccountConnectedServer");
+        if (!connectHelp.AccountConnected.Equals(accountConnected))
+        {
+            setAccount(accountConnected);
+            StateHasChanged();
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private void setAccount(string account)
+    {
+        connectHelp.AccountConnected = account ?? "";
+        connectHelp.setAccountFormated();
+        StateHasChanged();
+    }
+
+
+    public async ValueTask DisposeAsync()
+    {
+        await connectDisplayJSObjectReference.DisposeAsync();
+        dotNetObjectReference.Dispose();
+    }
+}

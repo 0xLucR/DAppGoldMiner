@@ -1,0 +1,13 @@
+.themed-grid-col {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  background-color: rgba(153, 144, 13, 0.705);
+  border: 0px solid rgba(3, 0, 8, 0.288);
+}
+
+.themed-container {
+  padding: .75rem;
+  margin-bottom: 1.5rem;
+  background-color: rgba(0, 123, 255, .15);
+  border: 0px solid rgba(1, 8, 15, 0.274);
+}

@@ -1,0 +1,26 @@
+﻿@inherits LayoutComponentBase
+
+<main>
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-auto col-md-2 col-xl-3 px-sm-2 px-0 bg-dark">
+                <div class="d-flex flex-column p-3 px-3 text-white bg-dark min-vh-100" style="width: 280px">
+                    <a href="/#" class="d-flex align-items-center mb-3 mb-md-0 text-white text-decoration-none">
+                        <img src="assets/dist/img/icon-gold.png" />
+                        <span class="fs-3"> Gold Miner</span>
+                    </a>
+                    <hr>
+                    <NavMenu></NavMenu>
+                    <hr>
+                    <ConnectWallet></ConnectWallet>
+                </div>
+            </div>
+
+            <div class="col py-3 table-overflow">
+                @Body
+            </div>
+        </div>
+    </div>
+
+</main>
