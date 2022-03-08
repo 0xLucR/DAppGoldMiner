@@ -70,3 +70,24 @@
 - OpenZeppelin: https://openzeppelin.com/
 - Referência de códigos solidity: https://github.com/OpenZeppelin
 - IDE Remix: https://remix.ethereum.org/
+
+
+## Project result
+- Video 1 -> Ciclo de todo o processo. Clamando Token à clamando recompensa de stake.
+
+<p align="center">
+    <img src="assets/to_readme/v1.gif" />
+</p>
+
+- Video 2 -> Stake Multiplos NFTs
+
+<p align="center">
+    <img src="assets/to_readme/v2.gif" />
+</p>
+
+- Video 2 -> Rodando teste dos smart contrac com "Hardhat + Type"
+
+<p align="center">
+    <img src="assets/to_readme/v3.gif" />
+</p>
+
