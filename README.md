@@ -3,6 +3,7 @@
 
 ## Objetivos do projeto
 - Esse projeto tem como objetivo o aperfeiçoamento de criação de "smart contracts" em linguagem "solidity", usando o ambiente de desenvolvimento "HARDHAT" com "Typescript" para execução dos testes. 
+- Para manter o padrão de seguranã dos "smart contracts", foi usado o "OpenZeppelin", que é uma biblioteca para desenolvimento seguro de contratos inteligentes.
 - O porjeto D'aap deverá permitir executar as seguintes ações em seguencia:
      - Clamar Tokens grátis (Padrão ERC20);
      - Usar os Tokens para mintar NFT (Padrão ERC721);
@@ -32,7 +33,7 @@
 
 ## Contract 1 - Token.sol
 - Token ERC20.
-- Token "Gold miner token - GMT".
+    - "Gold miner token - GMT".
 - Smart Contract responsável pelo controle do Token.
  
 ## Contract 2 - TokenClaim.sol
@@ -40,7 +41,7 @@
 
 ## Contract 3 - MinerNFT.sol
 - Token ERC721.
-- Token "Gold miner NFT".
+    - "Gold miner NFT".
 - Smart Contract responsável por emitir e armazenar os NFTs.
 - Segundo regra implementada de Acesso de controle no Smart Contract, para mintar um NFT o emissor tem que está habilitado.
 - Os NFT mintado possuem 4 tipos de Classe: A,B,C e D. A chances para cada uma das classes são:
@@ -50,18 +51,22 @@
     - Classe D: 50% Marty.
 
 ## Contract 4 - MinerNFTGenerate.sol
-- Smart Contract responsável por verificar se o usuário(endereço) está hábil para mintar um NFT, e estando hábil faz uma chamada para o contrato HeroNFT.sol dando continuidade no processo.
+- Smart Contract responsável por verificar se o usuário(endereço) está hábil para mintar um NFT, e estando hábil faz uma chamada para o contrato MinerNFT.sol dando continuidade no processo.
 - Para está hábil a mintar um NFT, o usuário precisa ter Tokens GMT em seu balanço e também precisa ter dado a permissão para o endereço do Smart Contract utilizar esses Tokens GMT.
 
 ## Contract 5- NFTFarm.sol
-- Smart Contract onde a mágica acontece.
+- Smart Contract onde a mágica acontece rsrs... SC responsável pelo controle do Farm.
+- As recompensa são caluladas baseada em 2 parametros:
+    - 1º -> Tokens por Blocos
+    - 2º -> Quantidade de Tokens por Blocos depende da 'classe do  NFT' que vai de "A à D"
 - Permite executar as seguintes ações:
-    - Colocar NFTs em stake;
-      - Em vez de enviar o NFT para um smart contract, optei por criar uma flag em sua struct sinalizando se o NFT está ou não está minerando/farmando
-    - Retirar NFTs do stake;
-    - fazer Harvest nas recompensas.
+    - Colocar NFTs em stake (DEPOSIT);
+      - Em vez de enviar o NFT para um smart contract, optei por criar uma flag em sua struct sinalizando se o NFT está ou não minerando/farmando
+        - Não é possível tranferir NFTs que estão minerando/farmando
+    - Retirar NFTs do stake (WITHDRAW);
+    - Clamar recompensas tokem GMT (HARVEST).
 
 ## References
-- OpenZeppe: https://openzeppelin.com/
+- OpenZeppelin: https://openzeppelin.com/
 - Referência de códigos solidity: https://github.com/OpenZeppelin
 - IDE Remix: https://remix.ethereum.org/
