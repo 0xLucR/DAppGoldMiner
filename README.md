@@ -1,5 +1,5 @@
 # DAppGoldMiner
- Gold Miner - Projeto NFT Farm
+ Gold Miner - Projeto NFT Farm (Stake de NFT / interação com Tokens padrão ERC20 e ERC721)
 
 ## Objetivos do projeto
 - Esse projeto tem como objetivo o aperfeiçoamento de criação de "smart contracts" em linguagem "solidity", usando o ambiente de desenvolvimento "HARDHAT" com "Typescript" para execução dos testes. 
