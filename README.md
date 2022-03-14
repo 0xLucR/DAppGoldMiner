@@ -46,7 +46,7 @@
 - Segundo regra implementada de Acesso de controle no Smart Contract, para mintar um NFT o emissor tem que está habilitado.
 - Os NFT mintado possuem 4 tipos de Classe: A,B,C e D. A chances para cada uma das classes são:
     - Classe A: 10% Zander;
-    - Classe B: 15% EthBruceenia;
+    - Classe B: 15% Bruce;
     - Classe C: 25% Rock;
     - Classe D: 50% Marty.
 
